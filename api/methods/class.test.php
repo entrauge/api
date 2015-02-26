@@ -33,7 +33,7 @@ class Test extends Controller{
 	}
 	
 	function getList(){
-		$myData = $this->getList();
+		$myData = $this->getData();
 		$this->send($myData);
 	}
 		

@@ -5,8 +5,9 @@
 # test api Version 2
 #----------------------------------------------------------------------
 CodeMap::addFamily("test");
-CodeMap::addMethod('getList',false);
+CodeMap::addMethod('getList',false,array('private'=>0,'auth'=>1));
 
+/*
 
 #----------------------------------------------------------------------
 # USERS API
@@ -51,6 +52,7 @@ CodeMap::addMethod('forgotPassword',array('email'),3);
 CodeMap::addMethod('checkLookupCode',array('code'),3);
 CodeMap::addMethod('resetPassword',array('code','password','password_confirm'=>'Confirm your password'),3);
 CodeMap::addMethod('changePassword',array('pass_current'=>'Your current password is required','password'=>'A new password is required','pass_confirm'=>'Verify your new password'),3,2);
+*/
 
 
 
