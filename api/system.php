@@ -9,7 +9,6 @@ if(!isset($_SESSION)){
 	session_start();
 }
 
-
 #----------------------------------------------------------------------
 # 1. Setup Vars, Prefs etc.. that API files sometimes rely on
 #----------------------------------------------------------------------
@@ -17,26 +16,24 @@ define('USE_DATABASE',1);
 define('LOCALHOST',0);
 define('STORAGE_FOLDER','files');
 define('USER_ACCOUNT_TYPE',1);
-define('GOOGLE_KEY','');
+
 
 //Database Tables 
 define('DB_BDAY','bday');
 define('DB_FRIENDS','friends');
 define('DB_USERS','users');
 
-	
 		$db=array(
 		'host'=>'mysql51-002.wc1.dfw1.stabletransit.com',
 		'name'=>'615652_forgetm',
 		'username'=>'615652_forgetm',
 		'password'=>'cMiMn22oEgUe');
-	
-	
-	//$db=array('host'=>'localhost','name'=>'urgency','username'=>'root','password'=>'root');
-	define("DB_HOST",$db['host']);
-	define("DB_NAME",$db['name']);
-	define("DB_USERNAME",$db['username']);
-	define("DB_PASSWORD",$db['password']);	
+
+//$db=array('host'=>'localhost','name'=>'urgency','username'=>'root','password'=>'root');
+define("DB_HOST",$db['host']);
+define("DB_NAME",$db['name']);
+define("DB_USERNAME",$db['username']);
+define("DB_PASSWORD",$db['password']);	
 
 #----------------------------------------------------------------------
 # 2. AutoSetup Paths and Setup Datbase Information
@@ -62,27 +59,17 @@ require_once('classes/class.auth.php');
 require_once('classes/class.cookie.php');
 require_once('classes/class.request.php');
 require_once('classes/class.table.php');
-/*
-require_once('classes/OAuth.php');
-require_once('methods/class.notify.php');
-require_once('methods/class.google.php'); 
-*/
+
 
 #----------------------------------------------------------------------
 # 4. 3rd party helper and other.
 #----------------------------------------------------------------------
-require_once('Services/Twilio.php');
-require_once("classes/facebook/facebook.php");
 require_once('classes/class.str.php'); 
 require_once('classes/class.log.php'); 
 
 require_once('classes/class.form.php');
 require_once('classes/class.uploader.php');
 require_once("classes/class.phpmailer.php");
-
-#require_once("classes/twitteroauth/twitteroauth.php");
-#require_once('autoload_parse.php');
-
 
 #---------------------------------------------------------------------
 # 5. Auto setup paths and include the main setup.php 
