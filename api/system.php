@@ -1,12 +1,11 @@
 <?php 
-#
-header("Access-Control-Allow-Origin: *");
+#header("Access-Control-Allow-Origin: *");
 #Errors on/off
 ini_set('error_reporting', E_ALL ^ E_NOTICE);
 ini_set('display_errors',1);
 
 if(!isset($_SESSION)){
-	session_start();
+	//session_start();
 }
 
 #----------------------------------------------------------------------
@@ -18,18 +17,8 @@ define('STORAGE_FOLDER','files');
 define('USER_ACCOUNT_TYPE',1);
 
 
-//Database Tables 
-define('DB_BDAY','bday');
-define('DB_FRIENDS','friends');
-define('DB_USERS','users');
+$db=array('host'=>'localhost','name'=>'testdb','username'=>'root','password'=>'root');
 
-		$db=array(
-		'host'=>'mysql51-002.wc1.dfw1.stabletransit.com',
-		'name'=>'615652_forgetm',
-		'username'=>'615652_forgetm',
-		'password'=>'cMiMn22oEgUe');
-
-//$db=array('host'=>'localhost','name'=>'urgency','username'=>'root','password'=>'root');
 define("DB_HOST",$db['host']);
 define("DB_NAME",$db['name']);
 define("DB_USERNAME",$db['username']);
