@@ -1,2 +1,2 @@
-# HelloWorld
-API Custom Class Setup
+# API
+Custom API Class Setup
