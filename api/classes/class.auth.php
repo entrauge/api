@@ -21,7 +21,7 @@ class Auth{
 		public static  $auth_hash = "u_hash";
 		public static  $auth_type = "u_type";
 		public static  $login_name = "u_name";
-		public static  $auth_secret = "fx5Jlap6uZY";
+		public static  $auth_secret = "fx5Jlap6uZY3";
 		public static  $cookies_exclude = array("email","username");
 		public static  $cookie_path = "/";
 		public static  $cookie_folder = "private";

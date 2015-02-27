@@ -55,8 +55,6 @@ class Cookie {
 	//kills the value of a cookie
 	public static function kill($cName,$cPath="/",$cDomain=""){
 		$cDomain = ($cDomain=="") ? Auth::$cookie_domain : $cDomain;
-		//print 'LOGOUT - $cDomain '.$cDomain;
-		//$cDomain  = str_replace("dev.",".",$cDomain);
 		$cDomain  = str_replace("www.",".",$cDomain);
 		//print $cDomain;
 		setcookie($cName,false,time()-443265,$cPath,$cDomain);

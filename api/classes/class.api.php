@@ -1,11 +1,19 @@
 <?
 /*
-
+Custom API Class
 madrid@entrauge.com
-TODO
-2015-26-02
 
-Removed old stuff
+Use with these classes
+class.auth.php
+class.cookie.php
+class.request.php
+
+Date Updated: 02-26-2015
+-----------------
+-Defaults to JSON now
+-Removed old variables/functions
+-Condenssed some lines
+-Removed unnecessary formats
 
 */
 
@@ -33,7 +41,6 @@ class API{
 	
 	var $api_family=false;
 	var $api_action=false;
-	
 	var $mode = "internal"; // use interal or external
 	var $page =  array(); // for page array
 	var $aRequiredFields = array();
@@ -118,22 +125,16 @@ class API{
 	}
 	
 	/*
-	###############################################################
-	## getter setters  for our custom _vars setup
-	###############################################################
-		API->set('total',35);
-		data::get('total'); //will search out for _vars[count] before it
 		
-		Use like
-		1. outside
-			callMethod('comments.setLikes',array('total'=>30)); 
-		2. inside the class.comments.php
-			$total = data::get('total');
-		
+	Form params internal params like 
+	$api->callMethod('comments.setTotal',array('total'=>30)); 
+	...and internal in your class like
+	$total = $this->get('total'); //echo 30
+	when extending controller.
 	*/
+	
 	//this is for special vars//getter
 	function get($key,$def=false){
-		$rKey = strtolower($key);
 		//need a force request thing here
 		$v = (isset($this->_vars[$key])) ? $this->_vars[$key] :  Request::get($key,$def);
 		return $v;
@@ -174,11 +175,10 @@ class API{
 					if($this->checkRequired($aAction)){
 					
 						$this->perform();
-						
 						$this->status(1,99);
 		
 						$dat = ($this->rspData) ? $this->API_RESULTS : "";
-						$this->setRSP($dat);
+						$this->setResponse($dat);
 						
 						if($this->mode=="internal"){
 							//if they used $api->format="json" return json else array
@@ -201,7 +201,7 @@ class API{
 	
 					if(($this->response['failed']==false) and (!$this->API_RESULTS)) {
 						$this->status(0,200);
-						$this->setRSP();
+						$this->setResponse();
 					}
 				}
 				
@@ -221,13 +221,9 @@ class API{
 		$aOutput = array_merge($this->response,$na);
 		if($this->response['failed']!=true){	
 			if(!Request::equals('data','false')) $aOutput['data'] = $this->API_RESULTS;
-		}			
-		if(function_exists('json_encode')){
-			 $json_str .= json_encode($aOutput);
-		}else{
-			require_once("class.json.php");
-			$json_str .= FastJSON::encode($aOutput);
-		}
+		}		
+		//might need json plugin for php<5.2	
+		$json_str = json_encode($aOutput);
 		
 		if($dump){
 			print $json_str;
@@ -263,7 +259,7 @@ class API{
 			if(!$result){
 				#EXTERNAL ERRORS
 				$this->status(0,103);
-				$this->setRSP();
+				$this->setResponse();
 			}
 		}
 		return $result;
@@ -276,7 +272,7 @@ class API{
 		$proceed = ($this->authType==1) ? Auth::check() : true;
 		if(!$proceed){
 			$this->status(0,300);
-			$this->setRSP();
+			$this->setResponse();
 		}
 		return $proceed;
 	}
@@ -286,66 +282,53 @@ class API{
 	
 	function checkRequired($aAction){
 		
-			$aReq = $aAction['required'];
-
-			$sErrors = 0;
-			if($aReq){
-				foreach($aReq as $field=>$pageError){
-					$fieldErrorText=false;
-					//use to determine if that field page error exists
-					$eval_field = (is_numeric($field)) ? $pageError : $field;
-					if(stristr("_",$eval_field)){
-						$eval_field = split("_",$eval_field);
-						$eval_field = $eval_field[0];
-					}
-
-					$fieldErrorText = (is_numeric($field)) ? ucfirst($eval_field)." $this->pageErrorSuffix" : $pageError;
+		$aReq = $aAction['required'];
+		$sErrors = 0;
 		
-					if($this->varMissing($eval_field)){
-							//array_push($this->aRequiredFields,$eval_field);
-						if($fieldErrorText){
-							array_push($this->aPageErrors,$fieldErrorText);
-						}
-						
-						$sErrors++;
-					}else{
-						
+		if($aReq){
+			foreach($aReq as $field=>$pageError){
+				$fieldErrorText=false;
+				//use to determine if that field page error exists
+				$eval_field = (is_numeric($field)) ? $pageError : $field;
+				$fieldErrorText = (is_numeric($field)) ? ucfirst($eval_field)." $this->pageErrorSuffix" : $pageError;
+	
+				if($this->varMissing($eval_field)){
+					if($fieldErrorText){
+						array_push($this->aPageErrors,$fieldErrorText);
 					}
+					$sErrors++;
 				}
 			}
-			
-			$result =  ($sErrors==0) ? true:false;
-			if(!$result){
-				#EXTERNAL ERRORS
-				$this->status(0,104);
-				$this->setRSP();
-			}
-			return $result;
+		}
+		
+		$result =  ($sErrors==0) ? true:false;
+		if(!$result){
+			#EXTERNAL ERRORS
+			$this->status(0,104);
+			$this->setResponse();
+		}
+		return $result;
 	}
 	
 	
 	
-	###############################################################
-	function pushErrors($pfErrors=NULL,$code=0,$msg="Method Failed"){
-			
-			if($pfErrors!=NULL){
-				foreach($pfErrors as $field=>$pageError){
-					$eval_field = (is_numeric($field)) ? $pageError : $field;
-						//$fieldErrorText = (is_numeric($field)) ? ucfirst($eval_field)." $this->pageErrorSuffix" : $pageError;
-						//array_push($this->aRequiredFields,$eval_field);
-						$fieldErrorText=$pageError;
-						if($fieldErrorText){
-							array_push($this->aPageErrors,$fieldErrorText);
-						}
-				}
+	function pushErrors($pfErrors=NULL,$code=0,$msg="Method Failed"){			
+		if($pfErrors!=NULL){
+			foreach($pfErrors as $field=>$pageError){
+				$eval_field = (is_numeric($field)) ? $pageError : $field;
+					$fieldErrorText=$pageError;
+					if($fieldErrorText){
+						array_push($this->aPageErrors,$fieldErrorText);
+					}
 			}
-			
-			//
-			$this->status(0,$code,$msg);
+		}
+		
+		$this->status(0,$code,$msg);
 	}
 	
 
 	function status($stat=0,$code=0,$customMsg=""){
+		
 		if($this->statusSet==false){
 			if($stat==0){ 
 				$status="fail";
@@ -355,10 +338,10 @@ class API{
 				if(!$code){ $code=1; }
 			}
 			
-			$this->rsp_status =$status;
-			$this->rsp_code= $code;
+			$this->rsp_status = $status;
+			$this->rsp_code = $code;
 			$this->stat_MESSAGE = ($customMsg!="") ? $customMsg : $this->STATUS_CODES[$code];
-			$this->statusSet=true;
+			$this->statusSet = true;
 		}
 	}
 	
@@ -366,11 +349,11 @@ class API{
 	
 	###############################################################
 	
-	function setRSP($passData=""){
+	function setResponse($passData=""){
 	    	
 			$this->timeOut();	
 		
-			if((!$this->rsp_status) and($passData)){
+			if( (!$this->rsp_status) AND ($passData) ){
 				$this->status(1);
 			}
 					
@@ -389,33 +372,19 @@ class API{
 			}
 		
 			$this->response = $this->aMain;
-			
-			$this->errors = $this->response['errors'];
-			
-			$this->checkResponse();
+
+			if($this->response['code']==99){
+				$this->errors = false;
+			}else{
+				$this->errors = ($this->response['errors']!=false) ? $this->response['errors'] : array("API: ".$this->response['message']);	
+
+			}
 			
 			return $this->response;
 	}
-	
-	
-	//o->getResponse('message)
-	function getResponse($rType){
-	 	return isset($this->response[$rType]) ? $this->response[$rType] : false;
-	}
-	
-	function checkResponse(){
-	
-		if($this->response['code']==99){
-			$this->errors = false;
-			return true;
-		}else{
-			//maybe change this back to regular.. but having the api error message is nice
-			$this->errors = ($this->response['errors']!=false) ? $this->response['errors'] : array("API: ".$this->response['message']);	
-			return false;
-		}
-	
-	}
-	
+
+
+
 	
 	function result($aData,$dbObj=NULL){
 	
@@ -494,7 +463,7 @@ class API{
 		}else{	
 			#EXTERNAL ERRORS - method required
 			$this->status(0,101);
-			$this->setRSP();
+			$this->setResponse();
 		}
 			
 		$result =  ($family_exists AND $action_exists) ? true : false;
@@ -502,7 +471,7 @@ class API{
 		if(!$result){
 			#EXTERNAL ERRORS - method does not exist in our php class files
 			$this->status(0,105);
-			$this->setRSP();
+			$this->setResponse();
 		}
 		return $result;
 
@@ -553,8 +522,8 @@ class CodeMap{
 		CodeMap::addMethod('update',array('id'),array('private'=>0));
 	*/
 	public static function addMethod($sTitle,$aRequired=NULL,$aParams=array()){
-
-		$iPrivate = (isset($aParams['private'])) ? $aParams['private'] : 1;
+		
+		$iPrivate = (isset($aParams['private'])) ? $aParams['private'] : 0;
 		$iAuth = (isset($aParams['auth'])) ? $aParams['auth'] : 0;
 		$sTitle = strtolower($sTitle);
 		
