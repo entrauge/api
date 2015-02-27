@@ -64,6 +64,7 @@ require_once('classes/class.table.php');
 #----------------------------------------------------------------------
 # 4. 3rd party helper and other.
 #----------------------------------------------------------------------
+//new stringUtils
 require_once('utils/class.StringUtils.php'); 
 require_once('utils/class.uploader.php');
 #require_once('classes/class.log.php'); 
