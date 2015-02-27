@@ -4,7 +4,7 @@
 # test api Version 2
 #----------------------------------------------------------------------
 CodeMap::addFamily("test");
-CodeMap::addMethod('getList',false,array('private'=>0));
+CodeMap::addMethod('getList',array('madrid'),array('private'=>0));
 
 
 

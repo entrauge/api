@@ -25,8 +25,8 @@ class Test extends Controller{
 	//our data list
 	private function getData(){
 		$list =array();
-		for($i=0;$i<=5;$i++){
-			$tmp=array('name'=>'Test#'.$i,'value'=>$i);
+		for($i=0;$i<=20;$i++){
+			$tmp=array('name'=>'Test #'.$i,'value'=>$i);
 			array_push($list,$tmp);
 		}
 		return $list;
