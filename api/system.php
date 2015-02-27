@@ -64,12 +64,10 @@ require_once('classes/class.table.php');
 #----------------------------------------------------------------------
 # 4. 3rd party helper and other.
 #----------------------------------------------------------------------
-require_once('classes/class.str.php'); 
-require_once('classes/class.log.php'); 
+require_once('utils/class.StringStuff.php'); 
+require_once('utils/class.uploader.php');
+#require_once('classes/class.log.php'); 
 
-require_once('classes/class.form.php');
-require_once('classes/class.uploader.php');
-require_once("classes/class.phpmailer.php");
 
 #---------------------------------------------------------------------
 # 5. Auto setup paths and include the main setup.php 
